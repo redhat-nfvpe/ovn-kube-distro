@@ -2,7 +2,7 @@ name: docker-build
 on:
   schedule:
     # * is a special character in YAML so you have to quote this string
-    - cron:  '20 21 * * *'
+    - cron:  '14 05 * * *'
 jobs:
   build:
     name: Docker build
@@ -15,13 +15,12 @@ jobs:
       REPOSITORY_USER: nfvperobot
     steps:    
       - uses: actions/checkout@v2
-
           
       - name: Clone upstream
         run: git clone --depth 1 https://github.com/ovn-org/ovn-kubernetes.git
 
       - name: Copy in our dockerfile
-        run: cp -f Dockerfile.fedora.dev /ovn-kubernetes/dist/images
+        run: cp -f Dockerfile.fedora.dev ./ovn-kubernetes/dist/images
 
       - name: Build image
         run: make fedora-dev
