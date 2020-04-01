@@ -26,7 +26,8 @@ jobs:
       - name: Build image
         run: |
           cd ovn-kubernetes/dist/images
-          docker build --build-arg KERNEL_VERSION=5.5.11-200.fc31.x86_64 -t ovn-kube-f-dev -f Dockerfile.fedora.dev .
+          sed -ie 's/`uname -r`/5.5.11-200.fc31.x86_64/' Makefile
+          make fedora-dev
 
       - name: Tag image
         run: docker tag ovn-kube-f-dev:latest nfvpe/ovn-daemonset-u:latest
