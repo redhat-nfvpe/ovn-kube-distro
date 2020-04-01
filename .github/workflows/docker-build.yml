@@ -20,8 +20,8 @@ jobs:
       - name: Clone upstream
         run: git clone --depth 1 https://github.com/ovn-org/ovn-kubernetes.git
 
-      # - name: Copy in our dockerfile
-      #   run: cp -f Dockerfile.fedora.dev ./ovn-kubernetes/dist/images
+      - name: Copy in our dockerfile
+        run: cp -f Dockerfile.fedora.dev ./ovn-kubernetes/dist/images
 
       - name: Build image
         run: |
