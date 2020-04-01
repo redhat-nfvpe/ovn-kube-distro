@@ -1,8 +1,9 @@
 name: docker-build
-on:
-  schedule:
-    # * is a special character in YAML so you have to quote this string
-    - cron:  '40 20 * * *'
+on: push
+# on:
+#   schedule:
+#     # * is a special character in YAML so you have to quote this string
+#     - cron:  '40 20 * * *'
 jobs:
   build:
     name: Docker build

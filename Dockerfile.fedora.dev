@@ -29,14 +29,16 @@ USER root
 
 ENV PYTHONDONTWRITEBYTECODE yes
 
-# ENV KERNEL_VERSION=5.5.8-200.fc31.x86_64
+RUN echo $KERNEL_VERSION
+# ARG KERNEL_VERSION
+# ARG KERNEL_VERSION=5.5.8-200.fc31.x86_64
 ARG KERNEL_VERSION=5.5.11-200.fc31.x86_64
 ARG OVN_BRANCH=master
 ARG OVS_BRANCH=master
+RUN echo $KERNEL_VERSION
 
 #Install tools that is required for building ovs/ovn
 
-#        dnf install "kernel-devel-uname-r == 5.5.8-200.fc31.x86_64" -y && \
 RUN dnf upgrade -y && dnf install --best --refresh -y --setopt=tsflags=nodocs \
 	PyYAML bind-utils procps-ng openssl numactl-libs firewalld-filesystem \
         libpcap hostname kubernetes-client \
@@ -57,6 +59,7 @@ RUN dnf builddep /tmp/ovs.spec -y
 RUN rm -f /tmp/ovs.spec
 
 #Build OVS binaries and install
+RUN echo "Building OVS with kernel version : " $KERNEL_VERSION
 RUN ./boot.sh
 RUN ./configure --prefix=/usr --localstatedir=/var --sysconfdir=/etc --enable-ssl --with-linux=/usr/src/kernels/$KERNEL_VERSION/
 RUN make && make install
@@ -87,7 +90,7 @@ RUN cat /root/git_info
 # ovnkube.sh is the entry point. This script examines environment
 # variables to direct operation and configure ovn
 COPY ovnkube.sh /root/
-COPY ovndb-raft-functions /root/
+COPY ovndb-raft-functions.sh /root/
 
 LABEL io.k8s.display-name="ovn-kubernetes-master" \
       io.k8s.description="OVN based Kubernetes CNI Plugin stack. Image contains latest code of all the components in the stack (OVN-kubernetes, OVN, OVS)." \
