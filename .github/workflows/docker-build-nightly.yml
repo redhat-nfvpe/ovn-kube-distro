@@ -1,9 +1,9 @@
 name: docker-build
-on: push
-# on:
-#   schedule:
-#     # * is a special character in YAML so you have to quote this string
-#     - cron:  '40 20 * * *'
+# on: push
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '00 21 * * *'
 jobs:
   build:
     name: Docker build
@@ -30,7 +30,9 @@ jobs:
           make fedora-dev
 
       - name: Tag image
-        run: docker tag ovn-kube-f-dev:latest nfvpe/ovn-daemonset-u:latest
+        run: |
+          docker tag ovn-kube-f-dev:latest nfvpe/ovn-daemonset-u:latest
+          docker tag ovn-kube-f-dev:latest nfvpe/ovn-daemonset-u:$(date "+%F")
   
       - name: Login to registry
         run: docker login -u  ${{ secrets.REGISTRY_USER }} -p  ${{ secrets.REGISTRY_PASS }}
