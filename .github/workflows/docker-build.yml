@@ -26,8 +26,7 @@ jobs:
       - name: Build image
         run: |
           cd ovn-kubernetes/dist/images
-          pwd
-          make fedora-dev
+          docker build -t ovn-kube-f-dev -f Dockerfile.fedora.dev .
 
       - name: Tag image
         run: docker tag ovn-kube-f-dev:latest nfvpe/ovn-daemonset-u:latest
