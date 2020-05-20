@@ -1,6 +1,7 @@
 name: docker-build
 # on: push
 on:
+  push:
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '00 21 * * *'
@@ -20,19 +21,15 @@ jobs:
       - name: Clone upstream
         run: git clone --depth 1 https://github.com/ovn-org/ovn-kubernetes.git
 
-      - name: Copy in our dockerfile
-        run: cp -f Dockerfile.fedora.dev ./ovn-kubernetes/dist/images
-
       - name: Build image
         run: |
           cd ovn-kubernetes/dist/images
-          sed -ie 's/`uname -r`/5.5.11-200.fc31.x86_64/' Makefile
-          make fedora-dev
+          make fedora
 
       - name: Tag image
         run: |
-          docker tag ovn-kube-f-dev:latest nfvpe/ovn-daemonset-u:latest
-          docker tag ovn-kube-f-dev:latest nfvpe/ovn-daemonset-u:$(date "+%F")
+          docker tag ovn-kube-f:latest nfvpe/ovn-daemonset-u:latest
+          docker tag ovn-kube-f:latest nfvpe/ovn-daemonset-u:$(date "+%F")
   
       - name: Login to registry
         run: docker login -u  ${{ secrets.REGISTRY_USER }} -p  ${{ secrets.REGISTRY_PASS }}
