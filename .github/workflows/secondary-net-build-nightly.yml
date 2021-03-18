@@ -1,0 +1,44 @@
+name: docker-build
+# on: push
+on:
+  workflow_dispatch:
+  push:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '00 21 * * *'
+jobs:
+  build:
+    name: Secondary Network PR Image build
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_CLI_EXPERIMENTAL: enabled
+      GO111MODULE: on
+      TARGET: amd64
+      REPOSITORY: nfvpe/multus
+      REPOSITORY_USER: nfvperobot
+    steps:    
+      - uses: actions/checkout@v2
+          
+      # pull request: https://github.com/ovn-org/ovn-kubernetes/pull/2010
+      - name: Clone upstream and checkout secondary network PR
+        run: |
+          git clone --depth 1 https://github.com/ovn-org/ovn-kubernetes.git
+          cd ovn-kubernetes
+          git fetch origin pull/2010/head
+          git checkout -b secondary-net FETCH_HEAD
+
+      - name: Build image
+        run: |
+          cd ovn-kubernetes/dist/images
+          make fedora
+
+      - name: Tag image
+        run: |
+          docker tag ovn-kube-f:latest nfvpe/ovn-daemonset-u:secondary-net
+  
+      - name: Login to registry
+        run: docker login -u  ${{ secrets.REGISTRY_USER }} -p  ${{ secrets.REGISTRY_PASS }}
+  
+      - name: Push latest/snapshot images
+        run: docker push nfvpe/ovn-daemonset-u:secondary-net
+
